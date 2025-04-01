@@ -71,4 +71,7 @@ app.get('/sum', (req: Request, res: Response): void => {
 // here we seperate logic of server listning from here coz we export entire app from here and it imported by supertest for test cases
 // if you have test running you dont want them to take up a port
 
+// We’re not doing an app.listen here. This is because we dont want the app to actually start when the tests are running. 
+// Usually you create a bin.ts file or main.ts file that imports app and actually listens on a port
+
 

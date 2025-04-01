@@ -1,10 +1,22 @@
 import Request  from 'supertest'  // to simulate request to server withou directly using axios or  without starting server
-import {describe,it,expect} from '@jest/globals'
+import {describe,it,expect,Mock, vi} from 'vitest'
 import {app} from '../index'
 
 
+// mocking
+// this basically mock the actual db call
+// vi.mock('../db',()=>{ // here i want to mock ../db file
+//    return { 
+//     prisma:{sum:{create:vi.fn()}} // but everytime we have to create keys for every modle and operation for mocking so we use Deep mocking 
+// }         
+// })
+
+// Remove the mock we added in index.test.ts , simply add a vi.mock("../db") for mocking all keys directly
+vi.mock('../db')
+
+
 // to test http servers(api endpoints)
-// here we use supertest library to simulate requset and get response instead of axios advantage of using Request(supertest) not need start server
+// here we use supertest library to simulate requset and get response instead of axios, advantage of using Request(supertest) not need start server
 describe('POST/sum',()=>{
     it('should return sum of two numbers', async ()=>{
        const res = await Request(app).post('/sum').send({
@@ -21,7 +33,7 @@ describe('POST/sum',()=>{
             a:"sjsjs"
         })
 
-        expect(res.status).toBe(411)
+        expect(res.statusCode).toBe(411)
         expect(res.body.message).toBe("Invalid Inputs")
     })
 
@@ -33,13 +45,13 @@ describe('POST/sum',()=>{
             b:"2"
         })
 
-        expect(res.status).toBe(200)
+        expect(res.statusCode).toBe(200)
         expect(res.body.answer).toBe(3)
     })
     it('should return message',async ()=>{
         const res = await Request(app).get('/sum').send()
  
-         expect(res.status).toBe(411)
+         expect(res.statusCode).toBe(411)
          expect(res.body.message).toBe("Invalid Inputs")
      })
 })
