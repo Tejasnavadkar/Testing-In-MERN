@@ -23,16 +23,18 @@ app.post("/sum", async (req, res):Promise<void> => {
 
     const answer = parsedResponse.data.a + parsedResponse.data.b;
 
-    await prisma.sum.create({  // mock this 
+    const response = await prisma.sum.create({  // db call we mock it while unit testing
         data:{
-            a:parsedResponse.data.a,
+            a:parsedResponse.data.a, // if i change the order then test failed coz we spy on prisma in index.test.ts
             b:parsedResponse.data.b,
             result:answer
         }
     })
 
+
     res.status(200).json({
-        answer
+        answer,
+        id:response.id // now here we use response also so we need to mock out response also coz while testing prisma.sum.create is mock/empty so it resturn empty response so might through error 
     })
 });
 

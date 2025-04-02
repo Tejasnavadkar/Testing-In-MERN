@@ -1,6 +1,7 @@
 import Request  from 'supertest'  // to simulate request to server withou directly using axios or  without starting server
 import {describe,it,expect,Mock, vi} from 'vitest'
 import {app} from '../index'
+import { prisma } from '../__mocks__/db'
 
 
 // mocking
@@ -19,11 +20,28 @@ vi.mock('../db')
 // here we use supertest library to simulate requset and get response instead of axios, advantage of using Request(supertest) not need start server
 describe('POST/sum',()=>{
     it('should return sum of two numbers', async ()=>{
+
+        prisma.sum.create.mockResolvedValue({  // here we return mocked response also in case we return/use response value
+            id:1,
+            a:2,
+            b:1,
+            result:3
+        })
+
+        vi.spyOn(prisma.sum,"create")  // to validate input while insert into db
+
        const res = await Request(app).post('/sum').send({
             a:1,
             b:2
         })
-
+        
+        expect(prisma.sum.create).toHaveBeenCalledWith({
+            data:{
+                a:1,
+                b:2,
+                result:3
+            }
+        })
         expect(res.statusCode).toBe(200)
         expect(res.body.answer).toBe(3)
     })
